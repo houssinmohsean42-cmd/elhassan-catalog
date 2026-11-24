@@ -1,0 +1,11 @@
+[
+  { "code": "DON-01", "name": "طقم دوناتس سادة",            "pieces": 3, "price": 85,  "category": "أطقم دوناتس",      "image": "" },
+  { "code": "DON-02", "name": "طقم دوناتس تشبيح ورق دهب",   "pieces": 3, "price": 100, "category": "أطقم دوناتس",      "image": "" },
+  { "code": "DON-03", "name": "طقم دوناتس منقرش",           "pieces": 3, "price": 95,  "category": "أطقم دوناتس",      "image": "" },
+  { "code": "ROY-01", "name": "طقم ملكي",                   "pieces": 4, "price": 150, "category": "أطقم ملكي ومفكر",  "image": "" },
+  { "code": "THK-01", "name": "طقم مفكر",                   "pieces": 3, "price": 110, "category": "أطقم ملكي ومفكر",  "image": "" },
+  { "code": "PMP-01", "name": "طقم يقطينة",                 "pieces": 3, "price": 90,  "category": "فازات وتحف",       "image": "" },
+  { "code": "BRD-01", "name": "طقم عروسة وفازة",            "pieces": 2, "price": 120, "category": "فازات وتحف",       "image": "" },
+  { "code": "INC-01", "name": "طقم مبخرة وسكرية",           "pieces": 2, "price": 80,  "category": "مباخر وسكريات",    "image": "" },
+  { "code": "VAS-01", "name": "فازات مودرن",                "pieces": 3, "price": 105, "category": "فازات وتحف",       "image": "" }
+]
