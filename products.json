@@ -1,11 +1,161 @@
 [
-  { "code": "DON-01", "name": "طقم دوناتس سادة",            "pieces": 3, "price": 85,  "category": "أطقم دوناتس",      "image": "" },
-  { "code": "DON-02", "name": "طقم دوناتس تشبيح ورق دهب",   "pieces": 3, "price": 100, "category": "أطقم دوناتس",      "image": "" },
-  { "code": "DON-03", "name": "طقم دوناتس منقرش",           "pieces": 3, "price": 95,  "category": "أطقم دوناتس",      "image": "" },
-  { "code": "ROY-01", "name": "طقم ملكي",                   "pieces": 4, "price": 150, "category": "أطقم ملكي ومفكر",  "image": "" },
-  { "code": "THK-01", "name": "طقم مفكر",                   "pieces": 3, "price": 110, "category": "أطقم ملكي ومفكر",  "image": "" },
-  { "code": "PMP-01", "name": "طقم يقطينة",                 "pieces": 3, "price": 90,  "category": "فازات وتحف",       "image": "" },
-  { "code": "BRD-01", "name": "طقم عروسة وفازة",            "pieces": 2, "price": 120, "category": "فازات وتحف",       "image": "" },
-  { "code": "INC-01", "name": "طقم مبخرة وسكرية",           "pieces": 2, "price": 80,  "category": "مباخر وسكريات",    "image": "" },
-  { "code": "VAS-01", "name": "فازات مودرن",                "pieces": 3, "price": 105, "category": "فازات وتحف",       "image": "" }
+  {
+    "code": "SH06",
+    "name": "طقم ملكي 6 قطع مع شمعة فواحة",
+    "pieces": 6,
+    "price": 400,
+    "category": "أطقم ملكي ومفكر",
+    "image": "images/SH06.jpg"
+  },
+  {
+    "code": "SH0501",
+    "name": "طقم استقبال 5 قطع (اللهم بارك هذا البيت)",
+    "pieces": 5,
+    "price": 300,
+    "category": "أطقم ملكي ومفكر",
+    "image": "images/SH0501.jpg"
+  },
+  {
+    "code": "WH0502",
+    "name": "طقم استقبال 5 قطع (اللهم بارك هذا البيت + إضافة اسم)",
+    "pieces": 5,
+    "price": 300,
+    "category": "أطقم ملكي ومفكر",
+    "image": "images/WH0502.jpg",
+    "addon": {
+      "label": "إضافة اسم",
+      "price": 15
+    }
+  },
+  {
+    "code": "WH04",
+    "name": "طقم استقبال إسلامي مع ماسك وشمعة",
+    "pieces": null,
+    "price": 280,
+    "category": "أطقم ملكي ومفكر",
+    "image": "images/WH04.jpg"
+  },
+  {
+    "code": "MB01",
+    "name": "مبخرة بيضاوي (اللهم بارك هذا البيت)",
+    "pieces": null,
+    "price": 150,
+    "category": "مباخر وسكريات",
+    "image": "images/MB01.jpg",
+    "variants": [
+      {
+        "label": "مع مبخرة ارابسيك",
+        "price": 150
+      },
+      {
+        "label": "مع مبخرة طبق عادي",
+        "price": 100
+      }
+    ],
+    "note": "الصورة للمبخرة الأرابسيك (متاحة بعدة ألوان)"
+  },
+  {
+    "code": "DO01",
+    "name": "طقم دوناتس سادة (متوفر 12 لون)",
+    "pieces": null,
+    "price": 110,
+    "category": "أطقم دوناتس",
+    "image": "images/DO01.jpg"
+  },
+  {
+    "code": "GO03",
+    "name": "طقم دوناتس ورق ذهب موديل (01)",
+    "pieces": null,
+    "price": 120,
+    "category": "أطقم دوناتس",
+    "image": "images/GO03.jpg"
+  },
+  {
+    "code": "DO0302",
+    "name": "طقم دوناتس لونين مطعم ورق ذهب",
+    "pieces": null,
+    "price": 125,
+    "category": "أطقم دوناتس",
+    "image": "images/DO0302.jpg"
+  },
+  {
+    "code": "DO0303",
+    "name": "طقم دوناتس فاخر مرصع أحجار (متاح 12 شكل)",
+    "pieces": null,
+    "price": 150,
+    "category": "أطقم دوناتس",
+    "image": "images/DO0303.jpg"
+  },
+  {
+    "code": "DO0300",
+    "name": "طقم دوناتس سادة أبيض مطفي",
+    "pieces": null,
+    "price": 100,
+    "category": "أطقم دوناتس",
+    "image": "images/DO0300.jpg"
+  },
+  {
+    "code": "DO0304",
+    "name": "طقم دوناتس مودرن",
+    "pieces": null,
+    "price": 150,
+    "category": "أطقم دوناتس",
+    "image": "images/DO0304.jpg"
+  },
+  {
+    "code": "TM0801",
+    "name": "طقم عروسة كامل 8 قطع مع شمعة (متوفر كل الألوان)",
+    "pieces": 8,
+    "price": 380,
+    "category": "أطقم دوناتس",
+    "image": "images/TM0801.jpg"
+  },
+  {
+    "code": "MF0301",
+    "name": "ديكور المفكر 3 قطع (متوفر كل الألوان)",
+    "pieces": 3,
+    "price": 80,
+    "category": "أطقم ملكي ومفكر",
+    "image": "images/MF0301.jpg"
+  },
+  {
+    "code": "MF0302",
+    "name": "طقم ديكور مفكر مع فازة (صينية ملكية)",
+    "pieces": null,
+    "price": 100,
+    "category": "أطقم ملكي ومفكر",
+    "image": "images/MF0302.jpg"
+  },
+  {
+    "code": "MF0303",
+    "name": "طقم ديكور مفكر مع فازة (كوستر)",
+    "pieces": null,
+    "price": 100,
+    "category": "أطقم ملكي ومفكر",
+    "image": "images/MF0303.jpg"
+  },
+  {
+    "code": "YQ0301",
+    "name": "طقم 3 قطع يقطين (متوفر كل الألوان)",
+    "pieces": 3,
+    "price": 90,
+    "category": "فازات وتحف",
+    "image": "images/YQ0301.jpg"
+  },
+  {
+    "code": "AR0301",
+    "name": "طقم العروسة النائمة (متوفر كل الألوان)",
+    "pieces": null,
+    "price": 90,
+    "category": "فازات وتحف",
+    "image": "images/AR0301.jpg"
+  },
+  {
+    "code": "TM0301",
+    "name": "طقم 3 قطع (متوفر 24 شكل)",
+    "pieces": 3,
+    "price": 80,
+    "category": "فازات وتحف",
+    "image": "images/TM0301.jpg"
+  }
 ]
