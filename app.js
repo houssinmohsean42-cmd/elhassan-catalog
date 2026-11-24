@@ -2,8 +2,10 @@
 /* elhassan home — كتالوج الجملة التفاعلي */
 
 const WA_NUMBER = '201125384436';
-const LS_CART = 'elhassan_catalog_cart_v1';
-const FINISHES = ['سادة', 'تشبيح ورق دهب', 'منقرش', 'لون خاص حسب الطلب'];
+const LS_CART = 'elhassan_catalog_cart_v2';
+const STD = 'كما في صورة الكتالوج';
+const CUSTOM = 'لون/تشطيب خاص حسب الطلب';
+const FINISHES = [STD, CUSTOM];
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s)
@@ -109,7 +111,7 @@ function renderProducts() {
         <select data-finish="${esc(p.code)}">
           ${FINISHES.map(f => `<option value="${esc(f)}">${esc(f)}</option>`).join('')}
         </select>
-        <input type="text" class="color-note hidden" data-color="${esc(p.code)}" placeholder="اكتب درجة اللون المطلوبة">
+        <input type="text" class="color-note hidden" data-color="${esc(p.code)}" placeholder="اكتب اللون/التشطيب المطلوب (السعر يتأكد من المصنع)">
         <div class="qty-row">
           <button class="qty-btn" data-qty-minus="${esc(p.code)}">−</button>
           <span class="qty-val" id="qty-${esc(p.code)}">1</span>
@@ -126,15 +128,16 @@ function cartTotals() {
   const sets = cart.reduce((s, it) => s + it.qty, 0);
   const pieces = cart.reduce((s, it) => s + (it.pieces ? it.qty * it.pieces : 0), 0);
   const unknownSets = cart.reduce((s, it) => s + (it.pieces ? 0 : it.qty), 0);
-  const total = cart.reduce((s, it) => s + it.qty * it.price, 0);
-  return { sets, pieces, unknownSets, total };
+  const total = cart.reduce((s, it) => s + (it.finish === CUSTOM ? 0 : it.qty * it.price), 0);
+  const customSets = cart.reduce((s, it) => s + (it.finish === CUSTOM ? it.qty : 0), 0);
+  return { sets, pieces, unknownSets, customSets, total };
 }
 function updateCartUi() {
   const t = cartTotals();
   $('cartCount').textContent = t.sets;
   $('bottomBar').classList.toggle('hidden', cart.length === 0);
   $('bbSets').textContent = t.sets;
-  $('bbTotal').textContent = fmt(t.total);
+  $('bbTotal').textContent = fmt(t.total) + (t.customSets ? ' + حسب الطلب' : '');
   renderDrawer();
 }
 function renderDrawer() {
@@ -148,7 +151,7 @@ function renderDrawer() {
       <div class="ditem-top">
         <div>
           <div class="ditem-name">${esc(it.name)} <span class="ditem-sub">(${esc(it.code)})</span></div>
-          <div class="ditem-sub">${esc((it.variant ? it.variant + ' — ' : '') + (it.addonName ? 'إضافة اسم: ' + it.addonName + ' — ' : ''))}${esc(it.finish)}${it.colorNote ? ' — ' + esc(it.colorNote) : ''} — ${fmt(it.price)} للطقم</div>
+          <div class="ditem-sub">${esc((it.variant ? it.variant + ' — ' : '') + (it.addonName ? 'إضافة اسم: ' + it.addonName + ' — ' : ''))}${esc(it.finish)}${it.colorNote ? ' — ' + esc(it.colorNote) : ''} — ${it.finish === CUSTOM ? 'السعر يتأكد من المصنع' : fmt(it.price) + ' للطقم'}</div>
         </div>
         <button class="ditem-del" data-del="${i}">حذف</button>
       </div>
@@ -158,13 +161,13 @@ function renderDrawer() {
           <span class="qty-val">${it.qty}</span>
           <button class="qty-btn" data-cart-plus="${i}">+</button>
         </div>
-        <span class="ditem-price">${fmt(it.qty * it.price)}</span>
+        <span class="ditem-price">${it.finish === CUSTOM ? 'يتأكد' : fmt(it.qty * it.price)}</span>
       </div>
     </div>`).join('');
   const t = cartTotals();
   $('drawerTotals').innerHTML = `
     <div>إجمالي الأطقم: <b>${t.sets}</b>${piecesText(t)}</div>
-    <div class="grand">الإجمالي المبدئي: ${fmt(t.total)}</div>`;
+    <div class="grand">الإجمالي المبدئي: ${fmt(t.total)}</div>${t.customSets ? `<div class="custom-warn">غير شامل ${t.customSets} طقم حسب الطلب، سعرها يتأكد من المصنع بعد مراجعة الطلب.</div>` : ''}`;
 }
 
 function piecesText(t) {
@@ -183,7 +186,7 @@ function orderMessage() {
   const gov = $('traderGov').value.trim() || '—';
   const notes = $('traderNotes').value.trim();
   const lines = cart.map(it =>
-    `• ${it.code} | ${it.name}${itemLabel(it)} | ${it.finish}${it.colorNote ? ' (' + it.colorNote + ')' : ''} | ${it.qty} طقم × ${fmt(it.price)} = ${fmt(it.qty * it.price)}`);
+    `• ${it.code} | ${it.name}${itemLabel(it)} | ${it.finish}${it.colorNote ? ' (' + it.colorNote + ')' : ''} | ${it.finish === CUSTOM ? it.qty + ' طقم — السعر يتأكد من المصنع (غير محسوب في الإجمالي)' : it.qty + ' طقم × ' + fmt(it.price) + ' = ' + fmt(it.qty * it.price)}`);
   return `طلب جملة جديد — elhassan home
 الاسم: ${name}
 المعرض/الصفحة: ${store}
@@ -193,7 +196,7 @@ function orderMessage() {
 ${lines.join('\n')}
 ──────────
 إجمالي الأطقم: ${t.sets}${piecesText(t).replace(/<\/?b>/g, '')}
-الإجمالي المبدئي: ${fmt(t.total)}
+الإجمالي المبدئي: ${fmt(t.total)}${t.customSets ? ' (غير شامل ' + t.customSets + ' طقم حسب الطلب سعرها يتأكد)' : ''}
 نظام الدفع: عربون قبل التنفيذ وباقي الحساب عند الجاهزية وقبل الشحن`;
 }
 
@@ -236,9 +239,10 @@ $('productsGrid').addEventListener('click', e => {
     const p = products.find(x => x.code === c);
     if (!p) return;
     const finish = document.querySelector(`select[data-finish="${CSS.escape(c)}"]`).value;
-    const colorNote = finish === 'لون خاص حسب الطلب'
+    const colorNote = finish === CUSTOM
       ? (document.querySelector(`input[data-color="${CSS.escape(c)}"]`).value.trim() || '')
       : '';
+    if (finish === CUSTOM && !colorNote) { toast('اكتب اللون/التشطيب المطلوب أولاً'); return; }
     const qty = pendingQty[c] || 1;
     let price = p.price, variant = '', addonName = '';
     if (p.variants) {
@@ -273,7 +277,7 @@ document.addEventListener('change', e => {
   const sel = e.target.closest('select[data-finish]');
   if (!sel) return;
   const note = document.querySelector(`input[data-color="${CSS.escape(sel.dataset.finish)}"]`);
-  if (note) note.classList.toggle('hidden', sel.value !== 'لون خاص حسب الطلب');
+  if (note) note.classList.toggle('hidden', sel.value !== CUSTOM);
 });
 function openDrawer() { $('cartDrawer').classList.remove('hidden'); $('drawerOverlay').classList.remove('hidden'); }
 function closeDrawer() { $('cartDrawer').classList.add('hidden'); $('drawerOverlay').classList.add('hidden'); }
