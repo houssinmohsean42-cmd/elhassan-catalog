@@ -1,0 +1,48 @@
+name: Extract catalog images
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install poppler-utils
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+      - name: Download v8 catalog PDF
+        run: curl -sSL -o /tmp/catalog.pdf 'https://easyconfirm.fra1.digitaloceanspaces.com/media/prod/whatsapp/general/02e760b8-5023-46a0-bfab-ffb191711db2.pdf'
+      - name: Extract images from PDF
+        run: |
+          mkdir -p /tmp/pdfimg images
+          pdfimages -f 1 -l 21 -j /tmp/catalog.pdf /tmp/pdfimg/img
+          ls -la /tmp/pdfimg/
+          md5sum /tmp/pdfimg/img-*.jpg | sort -k2
+      - name: Map images to product codes
+        run: |
+          set -e
+          cp /tmp/pdfimg/img-001.jpg images/SH06.jpg
+          cp /tmp/pdfimg/img-002.jpg images/SH0501.jpg
+          cp /tmp/pdfimg/img-003.jpg images/WH0502.jpg
+          cp /tmp/pdfimg/img-004.jpg images/WH04.jpg
+          cp /tmp/pdfimg/img-005.jpg images/MB01.jpg
+          cp /tmp/pdfimg/img-006.jpg images/DO01.jpg
+          cp /tmp/pdfimg/img-007.jpg images/GO03.jpg
+          cp /tmp/pdfimg/img-008.jpg images/DO0302.jpg
+          cp /tmp/pdfimg/img-009.jpg images/DO0303.jpg
+          cp /tmp/pdfimg/img-010.jpg images/DO0300.jpg
+          cp /tmp/pdfimg/img-011.jpg images/DO0304.jpg
+          cp /tmp/pdfimg/img-012.jpg images/TM0801.jpg
+          cp /tmp/pdfimg/img-013.jpg images/MF0301.jpg
+          cp /tmp/pdfimg/img-014.jpg images/MF0302.jpg
+          cp /tmp/pdfimg/img-015.jpg images/MF0303.jpg
+          cp /tmp/pdfimg/img-016.jpg images/YQ0301.jpg
+          cp /tmp/pdfimg/img-017.jpg images/AR0301.jpg
+          cp /tmp/pdfimg/img-018.jpg images/TM0301.jpg
+      - name: Commit images
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add images/
+          git commit -m "صور المنتجات من كتالوج الجملة v8"
+          git push
