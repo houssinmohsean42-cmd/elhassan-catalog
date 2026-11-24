@@ -10,7 +10,7 @@
 2. كل صنف سطر بالشكل ده:
 
 ```json
-{ "code": "DO01", "name": "طقم دوناتس سادة (متوفر 12 لون)", "pieces": 3, "price": 110, "category": "أطقم دوناتس", "image": "images/DO01.jpg" }
+{ "code": "DO01", "name": "طقم دوناتس سادة (متوفر 12 لون)", "pieces": null, "price": 110, "category": "أطقم دوناتس", "image": "images/DO01.jpg" }
 ```
 
 - `code`: كود الصنف (حروف لاتينية وأرقام).
