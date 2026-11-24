@@ -59,10 +59,11 @@ function parseCsv(text) {
     .map(r => ({
       code: r[0].trim(),
       name: (r[1] || '').trim(),
-      pieces: Math.max(1, parseInt(r[2], 10) || 1),
+      pieces: parseInt(r[2], 10) > 0 ? parseInt(r[2], 10) : null,
       price: parseFloat(r[3]) || 0,
       category: (r[4] || '').trim() || 'أخرى',
-      image: (r[5] || '').trim()
+      image: (r[5] || '').trim(),
+      note: (r[6] || '').trim()
     }))
     .filter(p => p.code && p.name);
 }
@@ -100,8 +101,11 @@ function renderProducts() {
       <div class="pcard-body">
         <span class="pcard-code">${esc(p.code)}</span>
         <span class="pcard-name">${esc(p.name)}</span>
-        <span class="pcard-meta">${p.pieces} ${p.pieces === 2 ? 'قطعة' : 'قطع'} في الطقم — ${esc(p.category)}</span>
-        <span class="pcard-price">${fmt(p.price)} <small>سعر الجملة للطقم</small></span>
+        <span class="pcard-meta">${p.pieces ? p.pieces + ' قطع في الطقم' : 'عدد القطع غير محدد في الكتالوج'} — ${esc(p.category)}</span>
+        <span class="pcard-price" id="price-${esc(p.code)}">${fmt(p.price)} <small>سعر الجملة للطقم</small></span>
+        ${p.variants ? `<select data-variant="${esc(p.code)}">${p.variants.map((v, i) => `<option value="${i}">${esc(v.label)} — ${fmt(v.price)}</option>`).join('')}</select>` : ''}
+        ${p.addon ? `<label class="addon-row"><input type="checkbox" data-addon="${esc(p.code)}"> ${esc(p.addon.label)} (+${fmt(p.addon.price)} للطقم)</label><input type="text" class="color-note hidden" data-addon-name="${esc(p.code)}" placeholder="الاسم المطلوب كتابته">` : ''}
+        ${p.note ? `<span class="pcard-note">${esc(p.note)}</span>` : '' }
         <select data-finish="${esc(p.code)}">
           ${FINISHES.map(f => `<option value="${esc(f)}">${esc(f)}</option>`).join('')}
         </select>
@@ -120,9 +124,10 @@ function renderProducts() {
 const pendingQty = {};
 function cartTotals() {
   const sets = cart.reduce((s, it) => s + it.qty, 0);
-  const pieces = cart.reduce((s, it) => s + it.qty * it.pieces, 0);
+  const pieces = cart.reduce((s, it) => s + (it.pieces ? it.qty * it.pieces : 0), 0);
+  const unknownSets = cart.reduce((s, it) => s + (it.pieces ? 0 : it.qty), 0);
   const total = cart.reduce((s, it) => s + it.qty * it.price, 0);
-  return { sets, pieces, total };
+  return { sets, pieces, unknownSets, total };
 }
 function updateCartUi() {
   const t = cartTotals();
@@ -143,7 +148,7 @@ function renderDrawer() {
       <div class="ditem-top">
         <div>
           <div class="ditem-name">${esc(it.name)} <span class="ditem-sub">(${esc(it.code)})</span></div>
-          <div class="ditem-sub">${esc(it.finish)}${it.colorNote ? ' — ' + esc(it.colorNote) : ''} — ${fmt(it.price)} للطقم</div>
+          <div class="ditem-sub">${esc((it.variant ? it.variant + ' — ' : '') + (it.addonName ? 'إضافة اسم: ' + it.addonName + ' — ' : ''))}${esc(it.finish)}${it.colorNote ? ' — ' + esc(it.colorNote) : ''} — ${fmt(it.price)} للطقم</div>
         </div>
         <button class="ditem-del" data-del="${i}">حذف</button>
       </div>
@@ -158,10 +163,17 @@ function renderDrawer() {
     </div>`).join('');
   const t = cartTotals();
   $('drawerTotals').innerHTML = `
-    <div>إجمالي الأطقم: <b>${t.sets}</b> — إجمالي القطع: <b>${t.pieces}</b></div>
+    <div>إجمالي الأطقم: <b>${t.sets}</b>${piecesText(t)}</div>
     <div class="grand">الإجمالي المبدئي: ${fmt(t.total)}</div>`;
 }
 
+function piecesText(t) {
+  if (!t.unknownSets) return ' — إجمالي القطع: <b>' + t.pieces + '</b>';
+  return t.pieces ? ' — قطع معروفة العدد: <b>' + t.pieces + '</b> (بدون ' + t.unknownSets + ' طقم عدد قطعها غير محدد)' : '';
+}
+function itemLabel(it) {
+  return (it.variant ? ' | ' + it.variant : '') + (it.addonName ? ' | إضافة اسم: ' + it.addonName : '');
+}
 /* ===== رسالة الواتساب ===== */
 function orderMessage() {
   const t = cartTotals();
@@ -171,7 +183,7 @@ function orderMessage() {
   const gov = $('traderGov').value.trim() || '—';
   const notes = $('traderNotes').value.trim();
   const lines = cart.map(it =>
-    `• ${it.code} | ${it.name} | ${it.finish}${it.colorNote ? ' (' + it.colorNote + ')' : ''} | ${it.qty} طقم × ${fmt(it.price)} = ${fmt(it.qty * it.price)}`);
+    `• ${it.code} | ${it.name}${itemLabel(it)} | ${it.finish}${it.colorNote ? ' (' + it.colorNote + ')' : ''} | ${it.qty} طقم × ${fmt(it.price)} = ${fmt(it.qty * it.price)}`);
   return `طلب جملة جديد — elhassan home
 الاسم: ${name}
 المعرض/الصفحة: ${store}
@@ -180,7 +192,7 @@ function orderMessage() {
 ──────────
 ${lines.join('\n')}
 ──────────
-إجمالي الأطقم: ${t.sets} — إجمالي القطع: ${t.pieces}
+إجمالي الأطقم: ${t.sets}${piecesText(t).replace(/<\/?b>/g, '')}
 الإجمالي المبدئي: ${fmt(t.total)}
 نظام الدفع: عربون قبل التنفيذ وباقي الحساب عند الجاهزية وقبل الشحن`;
 }
@@ -228,14 +240,36 @@ $('productsGrid').addEventListener('click', e => {
       ? (document.querySelector(`input[data-color="${CSS.escape(c)}"]`).value.trim() || '')
       : '';
     const qty = pendingQty[c] || 1;
-    const existing = cart.find(it => it.code === c && it.finish === finish && it.colorNote === colorNote);
+    let price = p.price, variant = '', addonName = '';
+    if (p.variants) {
+      const v = p.variants[+document.querySelector(`select[data-variant="${CSS.escape(c)}"]`).value] || p.variants[0];
+      price = v.price; variant = v.label;
+    }
+    if (p.addon && document.querySelector(`input[data-addon="${CSS.escape(c)}"]`).checked) {
+      addonName = document.querySelector(`input[data-addon-name="${CSS.escape(c)}"]`).value.trim();
+      if (!addonName) { toast('اكتب الاسم المطلوب أو ألغِ إضافة الاسم'); return; }
+      price += p.addon.price;
+    }
+    const existing = cart.find(it => it.code === c && it.finish === finish && it.colorNote === colorNote && (it.variant || '') === variant && (it.addonName || '') === addonName);
     if (existing) existing.qty += qty;
-    else cart.push({ code: p.code, name: p.name, pieces: p.pieces, price: p.price, finish, colorNote, qty });
+    else cart.push({ code: p.code, name: p.name, pieces: p.pieces, price, variant, addonName, note: p.note || '', finish, colorNote, qty });
     saveCart(); updateCartUi();
     toast('اتضاف ' + qty + ' طقم للسلة');
   }
 });
 document.addEventListener('change', e => {
+  const vs = e.target.closest('select[data-variant]');
+  if (vs) {
+    const p = products.find(x => x.code === vs.dataset.variant);
+    const v = p && p.variants[+vs.value];
+    const el = document.getElementById('price-' + vs.dataset.variant);
+    if (v && el) el.innerHTML = fmt(v.price) + ' <small>سعر الجملة للطقم</small>';
+  }
+  const ad = e.target.closest('input[data-addon]');
+  if (ad) {
+    const n = document.querySelector(`input[data-addon-name="${CSS.escape(ad.dataset.addon)}"]`);
+    if (n) n.classList.toggle('hidden', !ad.checked);
+  }
   const sel = e.target.closest('select[data-finish]');
   if (!sel) return;
   const note = document.querySelector(`input[data-color="${CSS.escape(sel.dataset.finish)}"]`);
