@@ -111,3 +111,9 @@ input,select,textarea{font-family:inherit;font-size:1rem;min-width:0}
   .grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
   body{padding-bottom:0}
 }
+
+/* ملاحظة السعر/الخيارات على البطاقة */
+.pcard-note { font-size: .8rem; color: #8a6d1f; background: #faf3df; border: 1px solid #ecd9a0; border-radius: 8px; padding: 4px 8px; }
+
+.addon-row{display:flex;align-items:center;gap:6px;font-size:.9rem;margin:4px 0}
+.addon-row input{width:auto}
